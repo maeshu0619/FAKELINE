@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for
+import os
+from flask import Blueprint, render_template, redirect, url_for, current_app
 from .models import Feed, Trash
 from . import db
 import datetime
@@ -31,12 +32,29 @@ def index():
 
     feeds = Feed.query.filter_by(date=today).all()
     trash = Trash.query.filter_by(date=today).first()
-
     state = {(f.dog, f.time): f.fed for f in feeds}
 
-    return render_template("index.html", today=today, state=state,
-                           DOGS=DOGS, TIMES=TIMES, trash=trash.taken)
+    # === ここを追加 ===
+    friends_dir = os.path.join(current_app.static_folder, "images", "friends")
+    friend_files = []
+    if os.path.exists(friends_dir):
+        friend_files = [
+            os.path.splitext(f)[0]
+            for f in os.listdir(friends_dir)
+            if os.path.isfile(os.path.join(friends_dir, f))
+            and os.path.splitext(f)[1].lower() in [".png", ".jpg", ".jpeg"]
+        ]
+    # ==================
 
+    return render_template(
+        "index.html",
+        today=today,
+        state=state,
+        DOGS=DOGS,
+        TIMES=TIMES,
+        trash=trash.taken,
+        friend_files=friend_files   # ← 追加
+    )
 @bp.route("/toggle/<dog>/<time>")
 def toggle(dog, time):
     today = datetime.date.today().isoformat()

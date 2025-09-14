@@ -2,132 +2,211 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <title>YATTAN | タスクチェック共有アプリ</title>
+  <title>FAKELINE</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-  <!-- Bootstrap Icons（小さなアイコン用／任意） -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-    rel="stylesheet"
-  />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
-<body class="bg-body-tertiary">
-  <!-- Hero -->
-  <header class="ytn-hero shadow-sm">
-    <div class="container py-4">
-      <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
-        <div>
-          <div class="d-inline-flex align-items-center gap-2">
-            <span class="ytn-logo rounded-3 d-inline-flex align-items-center justify-content-center">
-              <i class="bi bi-check2-circle"></i>
-            </span>
-            <h1 class="ytn-title mb-0">YATTAN</h1>
-          </div>
-          <p class="text-white-50 mb-0 mt-1">タスクチェック共有アプリ</p>
-        </div>
-        <div class="ytn-date badge text-bg-light text-dark fs-6">
-          <i class="bi bi-calendar3 me-1"></i>{{ today }}
-        </div>
-      </div>
-    </div>
-  </header>
+<body>
+  <div class="app-wrapper">
+    <!-- トーク画面とボタン群 -->
+    <div class="chat-container glass">
 
-  <!-- Content -->
-  <main class="container py-5">
-    <!-- Legend -->
-    <div class="d-flex align-items-center gap-3 mb-4">
-      <span class="legend-dot done"></span><span class="small text-muted me-3">完了</span>
-      <span class="legend-dot undone"></span><span class="small text-muted">未完了</span>
-    </div>
 
-    <!-- Cards: 1カード=1ユーザー/1対象 -->
-    <div class="row g-4">
-      {% for dog in DOGS %}
-      <div class="col-12 col-md-6 col-lg-4">
-        <div class="card ytn-card h-100 border-0 shadow-sm">
-          <div class="card-body d-flex flex-column">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <div class="d-flex align-items-center gap-2">
-                <div class="avatar gradient"></div>
-                <h5 class="card-title mb-0">{{ dog }}</h5>
-              </div>
-              <!-- 完了率バッジ -->
-              {% set done = (TIMES | selectattr('__call__','equalto',None) | list) %}
-              {% set count_done = (TIMES | map('string') | list | length) %}
-              {% set n_done = (TIMES | map('string') | select('equalto', 'dummy') | list | length) %}
-              {# 簡易にPython書けないため、下でJSで完了率を計算する／見た目だけ先に配置 #}
-              <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis ytn-badge"
-                    data-dog="{{ dog }}">– / –</span>
-            </div>
 
-            <div class="d-grid gap-2">
-              {% for t in TIMES %}
-                {% set fed = state[(dog, t)] %}
-                <a
-                  href="{{ url_for('main.toggle', dog=dog, time=t) }}"
-                  class="btn btn-lg ytn-toggle w-100 d-flex align-items-center justify-content-between
-                         {{ 'is-done' if fed else 'is-undone' }}"
-                  data-fed="{{ 1 if fed else 0 }}"
-                >
-                  <span class="d-flex align-items-center gap-2">
-                    <i class="bi {{ 'bi-check-circle-fill' if fed else 'bi-circle' }}"></i>
-                    <span class="fw-semibold">{{ t }}</span>
-                  </span>
-                  <span class="status text-muted small">{{ '完了' if fed else '未' }}</span>
-                </a>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
+      <!-- 相手側入力フォーム -->
+      <form id="partner-form" class="input-form top-form">
+        <input type="text" id="partner-input" placeholder="相手のメッセージを入力..." />
+        <input type="file" id="partner-image" accept="image/*" hidden />
+        <button type="button" onclick="document.getElementById('user-image').click()">
+          <img src="{{ url_for('static', filename='images/Image.png') }}" alt="画像送信" style="width:20px; height:20px;">
+        </button>
+        <button type="submit">送信</button>
+      </form>
+
+      <!-- トーク画面 -->
+      <div id="chat-window" class="chat-window"></div>
+
+      <!-- 自分側入力フォーム -->
+      <form id="user-form" class="input-form bottom-form">
+        <input type="text" id="user-input" placeholder="自分のメッセージを入力..." />
+        <input type="file" id="user-image" accept="image/*" hidden />
+        <button type="button" onclick="document.getElementById('user-image').click()">
+          <img src="{{ url_for('static', filename='images/Image.png') }}" alt="画像送信" style="width:20px; height:20px;">
+        </button>
+        <button type="submit">送信</button>
+      </form>
     </div>
 
-    <!-- ゴミ出しカード -->
-  <div class="row g-4 mt-2">
-    <div class="col-12 col-md-6 col-lg-4">
-      <div class="card ytn-card h-100 border-0 shadow-sm">
-        <div class="card-body d-flex flex-column">
-          <div class="d-flex align-items-center gap-2 mb-3">
-            <div class="avatar gradient"></div>
-            <h5 class="card-title mb-0">今日のゴミ出し</h5>
-          </div>
-          <a href="{{ url_for('main.toggle_trash') }}"
-            class="btn btn-lg ytn-toggle w-100 d-flex align-items-center justify-content-between
-                    {{ 'is-done' if trash else 'is-undone' }}">
-            <span class="d-flex align-items-center gap-2">
-              <i class="bi {{ 'bi-check-circle-fill' if trash else 'bi-circle' }}"></i>
-              <span class="fw-semibold">ゴミ出し</span>
-            </span>
-            <span class="status text-muted small">{{ '完了' if trash else '未' }}</span>
-          </a>
-        </div>
-      </div>
+    <!-- サイドボタン -->
+    <div class="sidebar">
+      <button id="screenshot-btn" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <img src="{{ url_for('static', filename='images/ScreenShot.png') }}" 
+            alt="スクショ" 
+            style="width:24px; height:24px;">
+        <span>スクショ</span>
+      </button>
+      <button id="mode-btn" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <img src="{{ url_for('static', filename='images/LightDark.png') }}" 
+            alt="モード切替" 
+            style="width:24px; height:24px;">
+        <span>モード切替</span>
+      </button>
+      <button id="bg-btn" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <img src="{{ url_for('static', filename='images/BackGround.png') }}" 
+            alt="背景変更" 
+            style="width:24px; height:24px;">
+        <span>背景変更</span>
+      </button>
+      <input type="file" id="bg-file" accept="image/*" hidden />
+      <!-- 友だちリスト -->
+      友達選択
+      <select id="friend-list" class="friend-list">
+        {% for file in friend_files %}
+          <option value="{{ file }}">{{ file }}</option>
+        {% endfor %}
+      </select>
+
     </div>
   </div>
 
-
-    <!-- Footer -->
-    <div class="text-center mt-5">
-      <p class="text-muted small mb-0">
-        <i class="bi bi-info-circle me-1"></i>
-        ボタンを押すと状態がトグルします
-      </p>
-    </div>
-  </main>
+  <!-- html2canvasでスクショ -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <script>
-    // ページ表示時に各カードの完了率を計算してバッジに反映（見た目改善）
-    document.querySelectorAll('.ytn-card').forEach(card => {
-      const toggles = card.querySelectorAll('.ytn-toggle');
-      const n = toggles.length;
-      const done = Array.from(toggles).filter(a => a.dataset.fed === '1').length;
-      const badge = card.querySelector('.ytn-badge');
-      if (badge) badge.textContent = `${done} / ${n}`;
+    function getTime() {
+      const now = new Date();
+      return now.getHours().toString().padStart(2,"0") + ":" + now.getMinutes().toString().padStart(2,"0");
+    }
+
+    function addMessage(content, sender, isImage=false) {
+      const chatWindow = document.getElementById("chat-window");
+      const msg = document.createElement("div");
+      msg.classList.add("message", sender);
+
+      const bubble = document.createElement("div");
+      bubble.classList.add("bubble");
+
+      const tail = document.createElement("img");
+      tail.classList.add("bubble-tail");
+      if (sender === "user") {
+        tail.src = "{{ url_for('static', filename='images/you_message_design_pc.png') }}";
+      } else {
+        tail.src = "{{ url_for('static', filename='images/partner_message_design_pc.png') }}";
+      }
+
+      if (sender === "partner") {
+        const friendSelect = document.getElementById("friend-list");
+        const selectedFriend = friendSelect.value;
+        const avatar = document.createElement("img");
+        avatar.classList.add("friend-avatar");
+        avatar.src = "{{ url_for('static', filename='images/friends/') }}" + selectedFriend + ".png";
+        msg.appendChild(avatar);
+      }
+      
+      if (isImage) {
+        const img = document.createElement("img");
+        img.src = content;
+        img.classList.add("msg-image");
+        bubble.appendChild(img);
+      } else {
+        bubble.textContent = content;
+      }
+
+      const metaBox = document.createElement("div");
+      metaBox.classList.add("meta-box");
+
+      if (sender === "user") {
+        const read = document.createElement("div");
+        read.classList.add("meta-read");
+        read.textContent = "既読";
+        metaBox.appendChild(read);
+      }
+
+      bubble.classList.add("bubble");
+      const time = document.createElement("div");
+      time.classList.add("meta-time");
+      time.textContent = getTime();
+      metaBox.appendChild(time);
+
+      msg.appendChild(tail);
+      msg.appendChild(bubble);
+      msg.appendChild(metaBox);
+      chatWindow.appendChild(msg);
+
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // 相手テキスト送信
+    document.getElementById("partner-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const input = document.getElementById("partner-input");
+      if (input.value.trim()) {
+        addMessage(input.value, "partner");
+        input.value = "";
+      }
+    });
+
+    // 自分テキスト送信
+    document.getElementById("user-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const input = document.getElementById("user-input");
+      if (input.value.trim()) {
+        addMessage(input.value, "user");
+        input.value = "";
+      }
+    });
+
+    // 画像送信
+    document.getElementById("partner-image").addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => addMessage(ev.target.result, "partner", true);
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("user-image").addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => addMessage(ev.target.result, "user", true);
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // スクショ保存（トーク画面のみ）
+    document.getElementById("screenshot-btn").addEventListener("click", () => {
+      html2canvas(document.querySelector(".chat-window")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "chat.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    });
+
+    // モード切替
+    document.getElementById("mode-btn").addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+    });
+
+    // 背景変更
+    document.getElementById("bg-btn").addEventListener("click", () => {
+      document.getElementById("bg-file").click();
+    });
+    document.getElementById("bg-file").addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const chatContainer = document.querySelector(".chat-container");
+          chatContainer.style.backgroundImage = `url(${ev.target.result})`;
+          chatContainer.style.backgroundRepeat = "no-repeat";
+          chatContainer.style.backgroundPosition = "center";
+          chatContainer.style.backgroundSize = "auto 100%"; // ← 縦をフィット
+        };
+        reader.readAsDataURL(file);
+      }
     });
   </script>
 </body>

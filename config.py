@@ -3,20 +3,18 @@ import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
-    # プロジェクト直下に dogfeed.db を置く
-    DB_PATH = os.path.join(BASE_DIR, "dogfeed.db")
-    SECRET_KEY = "change-this-in-production"
+    # Render 環境では DATABASE_URL が設定されている
+    uri = os.environ.get("DATABASE_URL")
+    if uri:
+        # postgres:// → postgresql+psycopg:// に変換
+        if uri.startswith("postgres://"):
+            uri = uri.replace("postgres://", "postgresql+psycopg://", 1)
+        elif uri.startswith("postgresql://"):
+            uri = uri.replace("postgresql://", "postgresql+psycopg://", 1)
+        SQLALCHEMY_DATABASE_URI = uri
+    else:
+        # ローカル環境では SQLite を使用
+        SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASE_DIR, "dogfeed.db")
 
-
-# import os
-
-# class Config:
-#     uri = os.environ.get("DATABASE_URL")
-#     if uri and uri.startswith("postgres://"):
-#         uri = uri.replace("postgres://", "postgresql+psycopg://", 1)
-#     elif uri and uri.startswith("postgresql://"):
-#         uri = uri.replace("postgresql://", "postgresql+psycopg://", 1)
-
-#     SQLALCHEMY_DATABASE_URI = uri
-#     SQLALCHEMY_TRACK_MODIFICATIONS = False
-#     SECRET_KEY = os.environ.get("SECRET_KEY", "change-me")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = os.environ.get("SECRET_KEY", "change-this-in-production")

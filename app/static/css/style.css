@@ -1,104 +1,277 @@
-/* 全体の質感 */
-body { letter-spacing: 0.01em; }
+body {
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
 
-/* Hero（グラデ＋軽いガラス感） */
-.ytn-hero {
-  background: linear-gradient(135deg, #5b8def 0%, #7bd5ff 60%, #b6f3ff 100%);
-  position: relative;
+.app-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.chat-container {
+  width: 380px;
+  height: 640px;
+  background: #f0f0f0;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
   overflow: hidden;
-}
-.ytn-title {
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: .02em;
-}
-.ytn-logo {
-  width: 44px;
-  height: 44px;
-  background: rgba(255,255,255,.2);
-  color: #fff;
-  font-size: 1.4rem;
-  backdrop-filter: blur(4px);
-}
-.ytn-date {
-  padding: .6rem .9rem;
-  backdrop-filter: blur(2px);
-  border: 1px solid rgba(0,0,0,.05);
+  position: relative;
 }
 
-/* カード */
-.ytn-card {
-  border-radius: 16px;
-  transition: transform .2s ease, box-shadow .2s ease;
+.chat-container.glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+}
+
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  margin: 5px 0;
+  display: flex;
+  align-items: flex-end;
+  max-width: 75%;
+}
+
+.message.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message.partner {
+  align-self: flex-start;
+  flex-direction: row;
+}
+
+.bubble {
+  padding: 5px;
+  border-radius: 20px;
+  font-size: 11px;
+  position: relative;
+  max-width: 220px;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+.friend-list {
+  width: 100%;
+  padding: 6px;
+  margin: 4px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.friend-avatar {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%; /* 円形マスク */
+  margin-right: 6px;
+  margin-top: 0px;
+  align-self: flex-start; 
+}
+
+
+/* 共通の吹き出し本体 */
+.bubble {
+  position: relative;
+  padding: 5px;
+  border-radius: 18px;
+  max-width: 220px;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+/* 隣に置くアホ毛画像 */
+.bubble-tail {
+  width: 10px;
+  height: 10px;
+  margin: -3px;
+  align-self: flex-start;  /* ← 上辺に揃える */
+  margin-top: 4px;         /* ← 少し下げて自然に */
+}
+
+/* ---- 相手の吹き出し ---- */
+.message.partner .bubble {
+  background: #EFEFEF;
+  /* border: 1px solid #ddd; */
+  border-radius: 18px;
+  padding: 8px;
+  margin-left: 0px;
+  position: relative;
+}
+
+.message.partner .bubble::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: +5px;
+  top: 10px;
+  width: 24px;
+  height: 24px;
+  background: url("{{ url_for('static', filename='images/ScreenShot.png') }}") no-repeat center;
+  background-size: contain;
+  z-index: 2;
+}
+
+.dark-mode .message.partner .bubble::before {
+  background: url("{{ url_for('static', filename='images/partner_message_design_smart_black.png') }}") no-repeat center;
+  background-size: contain;
+}
+
+
+/* ---- 自分の吹き出し ---- */
+.message.user .bubble {
+  background: #C3F69D;
+  border-radius: 18px;
+  padding: 8px;
+  margin-right: 0px;
+  position: relative;
+}
+
+.message.user .bubble::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: +5px;
+  top: 10px;
+  width: 24px;
+  height: 24px;
+  background-image: url("{{ url_for('static', filename='images/partner_message_design_pc.png') }}");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  z-index: 2;
+}
+
+.dark-mode .message.user .bubble::before {
+  background-image: url("{{ url_for('static', filename='images/partner_message_design_smart_black.png') }}");
+  background-size: 100% 100%;
+}
+
+.meta-box {
+  font-size: 9px;
+  color: #969696;
+  margin: 0 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.meta-read {
+  color: #969696;
+}
+
+.msg-image {
+  max-width: 150px;
+  border-radius: 10px;
+}
+
+.input-form {
+  display: flex;
+  padding: 6px;
   background: #fff;
+  border-top: 1px solid #ddd;
 }
-.ytn-card:hover {
+
+.input-form input[type="text"] {
+  flex: 1;
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  margin-right: 6px;
+}
+
+.input-form button {
+  padding: 6px 12px;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  border-radius: 16px;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: background 0.2s;
+}
+.input-form button:hover {
+  background: #43a047;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar button {
+  width: 70px;             /* 横幅 */
+  height: 70px;            /* 高さ（横と同じにして正方形） */
+  border: none;
+  border-radius: 16px;     /* 丸みを強めに */
+  background: rgba(75, 168, 111, 0.25); /* 半透明な緑 */
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+
+  /* 立体感（ネオモーフィズム風） */
+  box-shadow:
+    6px 6px 12px rgba(0, 0, 0, 0.2),
+    -6px -6px 12px rgba(255, 255, 255, 0.6);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  backdrop-filter: blur(8px);   /* ガラス感 */
+  -webkit-backdrop-filter: blur(8px);
+
+  transition: all 0.3s ease;
+}
+
+/* ホバー時に少し光る */
+.sidebar button:hover {
+  background: rgba(75, 168, 111, 0.35);
+  box-shadow:
+    4px 4px 8px rgba(0, 0, 0, 0.25),
+    -4px -4px 8px rgba(255, 255, 255, 0.7),
+    inset 0 0 6px rgba(255, 255, 255, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0,0,0,.08);
 }
 
-/* アバター（名前左の丸） */
-.avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #e9ecef;
-  flex: 0 0 36px;
-}
-.avatar.gradient {
-  background: linear-gradient(135deg, #b8c6ff, #e0fff7);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
+/* クリック時に押し込み感 */
+.sidebar button:active {
+  box-shadow:
+    inset 4px 4px 8px rgba(0, 0, 0, 0.25),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.7);
+  transform: translateY(1px);
 }
 
-/* トグルボタン（完了/未完了で色分け） */
-.ytn-toggle {
-  border-radius: 12px;
-  border: 1px solid var(--ytn-border, #e7e7e7);
-  background: var(--ytn-bg, #fff);
-  box-shadow: 0 1px 0 rgba(0,0,0,.02);
-  transition: transform .08s ease, background .2s ease, border-color .2s ease;
-  padding: .9rem 1rem;
-  text-decoration: none;
-}
-.ytn-toggle:hover {
-  transform: translateY(-1px);
-  text-decoration: none;
+.sidebar button:hover {
+  background: #43a047;
 }
 
-/* 完了 */
-.ytn-toggle.is-done {
-  --ytn-bg: #e8f7ee;
-  --ytn-border: #bfe6cd;
-  color: #0b6b3a;
-}
-.ytn-toggle.is-done .status { color: #0b6b3a !important; }
-
-/* 未完了 */
-.ytn-toggle.is-undone {
-  --ytn-bg: #fff;
-  --ytn-border: #e7e7e7;
-  color: #495057;
-}
-.ytn-toggle.is-undone .status { color: #6c757d !important; }
-
-/* 旧 btn-fed と互換にしておく（念のため） */
-.btn-fed {
-  background-color: #e8f7ee !important;
-  border-color: #bfe6cd !important;
-  color: #0b6b3a !important;
+.dark-mode .chat-container {
+  background: #2c2c2c;
+  color: #eee;
 }
 
-/* バッジ（完了率） */
-.ytn-badge {
-  padding: .5rem .7rem;
-  border: 1px solid rgba(0,0,0,.06);
+.dark-mode .bubble {
+  background: #444 !important;
+  color: #eee;
 }
 
-/* 凡例 */
-.legend-dot {
-  width: 12px; height: 12px; border-radius: 50%;
-  display: inline-block;
-  border: 1px solid rgba(0,0,0,.1);
+.dark-mode .input-form {
+  background: #333;
 }
-.legend-dot.done { background: #e8f7ee; border-color: #bfe6cd; }
-.legend-dot.undone { background: #fff; }
