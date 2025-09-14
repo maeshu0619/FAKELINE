@@ -1,0 +1,12 @@
+# 仮想環境
+venv/
+
+# Python キャッシュ
+__pycache__/
+*.pyc
+
+# SQLite ローカルDB（本番はPostgresを使うので不要）
+dogfeed.db
+
+# その他
+*.log

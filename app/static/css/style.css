@@ -1,0 +1,104 @@
+/* 全体の質感 */
+body { letter-spacing: 0.01em; }
+
+/* Hero（グラデ＋軽いガラス感） */
+.ytn-hero {
+  background: linear-gradient(135deg, #5b8def 0%, #7bd5ff 60%, #b6f3ff 100%);
+  position: relative;
+  overflow: hidden;
+}
+.ytn-title {
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: .02em;
+}
+.ytn-logo {
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,.2);
+  color: #fff;
+  font-size: 1.4rem;
+  backdrop-filter: blur(4px);
+}
+.ytn-date {
+  padding: .6rem .9rem;
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(0,0,0,.05);
+}
+
+/* カード */
+.ytn-card {
+  border-radius: 16px;
+  transition: transform .2s ease, box-shadow .2s ease;
+  background: #fff;
+}
+.ytn-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+}
+
+/* アバター（名前左の丸） */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e9ecef;
+  flex: 0 0 36px;
+}
+.avatar.gradient {
+  background: linear-gradient(135deg, #b8c6ff, #e0fff7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
+}
+
+/* トグルボタン（完了/未完了で色分け） */
+.ytn-toggle {
+  border-radius: 12px;
+  border: 1px solid var(--ytn-border, #e7e7e7);
+  background: var(--ytn-bg, #fff);
+  box-shadow: 0 1px 0 rgba(0,0,0,.02);
+  transition: transform .08s ease, background .2s ease, border-color .2s ease;
+  padding: .9rem 1rem;
+  text-decoration: none;
+}
+.ytn-toggle:hover {
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+/* 完了 */
+.ytn-toggle.is-done {
+  --ytn-bg: #e8f7ee;
+  --ytn-border: #bfe6cd;
+  color: #0b6b3a;
+}
+.ytn-toggle.is-done .status { color: #0b6b3a !important; }
+
+/* 未完了 */
+.ytn-toggle.is-undone {
+  --ytn-bg: #fff;
+  --ytn-border: #e7e7e7;
+  color: #495057;
+}
+.ytn-toggle.is-undone .status { color: #6c757d !important; }
+
+/* 旧 btn-fed と互換にしておく（念のため） */
+.btn-fed {
+  background-color: #e8f7ee !important;
+  border-color: #bfe6cd !important;
+  color: #0b6b3a !important;
+}
+
+/* バッジ（完了率） */
+.ytn-badge {
+  padding: .5rem .7rem;
+  border: 1px solid rgba(0,0,0,.06);
+}
+
+/* 凡例 */
+.legend-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(0,0,0,.1);
+}
+.legend-dot.done { background: #e8f7ee; border-color: #bfe6cd; }
+.legend-dot.undone { background: #fff; }
