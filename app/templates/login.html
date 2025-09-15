@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>ログイン - FAKELINE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
+</head>
+<body>
+  <div class="auth-container glass">
+    <h2>FAKELINE ログイン</h2>
+    <!-- タブ切替 -->
+    <div class="auth-tabs">
+      <button id="tab-login" class="active">ログイン</button>
+      <button id="tab-register">新規登録</button>
+    </div>
+
+    <!-- ログインフォーム -->
+    <form method="POST" class="auth-form active" id="login-form">
+      <input type="text" name="username" placeholder="ユーザー名" required>
+      <input type="password" name="password" placeholder="パスワード" required>
+      <button type="submit">ログイン</button>
+    </form>
+
+    <!-- 新規登録フォーム -->
+    <form method="POST" action="/register" class="auth-form" id="register-form">
+      <input type="text" name="username" placeholder="ユーザー名" required>
+      <input type="password" name="password" placeholder="パスワード" required>
+      <input type="password" name="confirm" placeholder="パスワード確認" required>
+      <button type="submit">登録する</button>
+    </form>
+
+    <!-- 指紋認証やキー -->
+    <div class="auth-extra">
+      <p>または</p>
+      <button type="button" onclick="fingerprintLogin()">指紋認証</button>
+      <button type="button" onclick="keyLogin()">セキュリティキー</button>
+    </div>
+  </div>
+
+  <script>
+    // タブ切替
+    const tabLogin = document.getElementById("tab-login");
+    const tabRegister = document.getElementById("tab-register");
+    const loginForm = document.getElementById("login-form");
+    const registerForm = document.getElementById("register-form");
+
+    tabLogin.addEventListener("click", () => {
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+      loginForm.classList.add("active");
+      registerForm.classList.remove("active");
+    });
+    tabRegister.addEventListener("click", () => {
+      tabRegister.classList.add("active");
+      tabLogin.classList.remove("active");
+      registerForm.classList.add("active");
+      loginForm.classList.remove("active");
+    });
+
+    // 指紋認証 (WebAuthn / TouchID / Android指紋センサー)
+    async function fingerprintLogin() {
+      try {
+        const cred = await navigator.credentials.get({
+          publicKey: {
+            challenge: new Uint8Array([/* サーバーから送られるランダム値 */]),
+            timeout: 60000,
+            userVerification: "required"
+          }
+        });
+        alert("指紋認証成功: " + JSON.stringify(cred));
+        // TODO: サーバーに cred を送信して検証
+      } catch (err) {
+        alert("指紋認証に失敗しました: " + err);
+      }
+    }
+
+    // セキュリティキー / パスキー認証
+    async function keyLogin() {
+      try {
+        const cred = await navigator.credentials.get({
+          publicKey: {
+            challenge: new Uint8Array([/* サーバーから送られるランダム値 */]),
+            timeout: 60000,
+            userVerification: "preferred"
+          }
+        });
+        alert("キー認証成功: " + JSON.stringify(cred));
+        // TODO: サーバーに cred を送信して検証
+      } catch (err) {
+        alert("キー認証に失敗しました: " + err);
+      }
+    }
+  </script>
+</body>
+</html>

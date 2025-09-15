@@ -136,7 +136,7 @@
         const selectedFriend = friendSelect.value;
         const avatar = document.createElement("img");
         avatar.classList.add("friend-avatar");
-        avatar.src = "{{ url_for('static', filename='images/friends/') }}" + selectedFriend;
+        avatar.src = "{{ url_for('static', filename='images/friends/') }}" + selectedFriend + ".png";
         msg.appendChild(avatar);
       }
       

@@ -1,23 +1,30 @@
 body {
-  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+  background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); /* グラデーション背景 */
   font-family: 'Segoe UI', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh; /* ← スマホでも高さ全体をカバー */
   margin: 0;
 }
 
+
 .app-wrapper {
   display: flex;
+  flex-direction: column; /* スマホでは縦並び */
   gap: 20px;
   align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%; /* はみ出し防止 */
 }
+
 
 .chat-container {
   width: 380px;
+  max-width: 95vw;  /* スマホ画面の横幅に収まるように */
   height: 640px;
-  background: #f0f0f0;
+  background: #fff;  /* トーク画面だけ白 */
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -26,8 +33,9 @@ body {
   position: relative;
 }
 
+
 .chat-container.glass {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255);
   backdrop-filter: blur(10px);
 }
 
@@ -209,9 +217,12 @@ body {
 
 .sidebar {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;   /* 横並びに変更 */
+  justify-content: center;
+  gap: 12px;             /* ボタン間の余白 */
+  margin-top: 12px;
 }
+
 
 .sidebar button {
   width: 70px;             /* 横幅 */

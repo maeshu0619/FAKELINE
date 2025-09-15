@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>新規登録 - FAKELINE</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
+</head>
+<body>
+  <div class="auth-container glass">
+    <h2>新規登録</h2>
+    <form method="POST">
+      <input type="text" name="username" placeholder="ユーザー名" required>
+      <input type="password" name="password" placeholder="パスワード" required>
+      <input type="password" name="confirm" placeholder="パスワード確認" required>
+      <button type="submit">登録する</button>
+    </form>
+    <div class="auth-extra">
+      <a href="{{ url_for('main.login') }}">ログインに戻る</a>
+    </div>
+  </div>
+</body>
+</html>
