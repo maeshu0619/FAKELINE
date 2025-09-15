@@ -85,10 +85,17 @@
       <!-- 友だちリスト -->
       友達選択
       <select id="friend-list" class="friend-list">
+        {% for filename in friend_files %}
+          {% set name = filename.rsplit('.', 1)[0] %}
+          <option value="{{ filename }}">{{ name }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- <select id="friend-list" class="friend-list">
         {% for friend in friends %}
           <option value="{{ friend.icon_filename }}">{{ friend.name }}</option>
         {% endfor %}
-      </select>
+      </select> -->
 
 
     </div>
@@ -116,12 +123,6 @@
       deleteBtn.textContent = "削除";
       deleteBtn.onclick = () => msg.remove();
       bubble.appendChild(deleteBtn);
-
-      // 友達管理ページへ遷移
-      document.getElementById("friends-btn").addEventListener("click", () => {
-        window.location.href = "{{ url_for('main.friends') }}";
-      });
-
 
       const tail = document.createElement("img");
       tail.classList.add("bubble-tail");
@@ -172,6 +173,11 @@
 
       chatWindow.scrollTop = chatWindow.scrollHeight;
     }
+
+    // 友達管理ページへ遷移
+    document.getElementById("friends-btn").addEventListener("click", () => {
+      window.location.href = "{{ url_for('main.friends') }}";
+    });
 
     // 直前メッセージ削除
     document.getElementById("delete-last-btn").addEventListener("click", () => {

@@ -54,13 +54,19 @@ def friends():
 
 @bp.route("/")
 def index():
-    user_id = session.get("user_id")
-    if not user_id:
-        return redirect(url_for("main.login"))
+    # static/images/friends フォルダのPNGファイルを取得
+    friends_dir = os.path.join(current_app.static_folder, "images", "friends")
+    friend_files = [f for f in os.listdir(friends_dir) if f.lower().endswith(".png")]
+    return render_template("index.html", friend_files=friend_files)
+# @bp.route("/")
+# def index():
+#     user_id = session.get("user_id")
+#     if not user_id:
+#         return redirect(url_for("main.login"))
 
-    # DBからフレンド情報を取得
-    friends = Friend.query.filter_by(user_id=user_id).all()
-    return render_template("index.html", friends=friends)
+#     # DBからフレンド情報を取得
+#     friends = Friend.query.filter_by(user_id=user_id).all()
+#     return render_template("index.html", friends=friends)
 
 @bp.route("/register", methods=["GET", "POST"])
 def register():
